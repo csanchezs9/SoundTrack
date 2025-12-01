@@ -557,26 +557,59 @@ body {
 }
 
 /* ===========================================
-   RESPONSIVE - MOBILE
+   iOS SAFE AREAS
    =========================================== */
-@media screen and (max-width: 768px) {
-    /* Splash Screen Mobile */
-    .splash-levels,
-    .splash-avicii {
-        font-size: clamp(3rem, 15vw, 6rem);
-        letter-spacing: -0.01em;
-        text-shadow: 0 0 40px rgba(150, 0, 255, 0.5),
-                     0 0 80px rgba(100, 0, 200, 0.3);
+@supports (padding-top: env(safe-area-inset-top)) {
+    #hud {
+        padding-top: max(1rem, env(safe-area-inset-top));
+        padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
     }
     
-    .splash-from {
-        font-size: 0.7rem;
-        left: -1rem;
-        letter-spacing: 0.2em;
+    .controls-container {
+        padding-bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1rem));
+    }
+}
+
+/* ===========================================
+   RESPONSIVE - MOBILE & iOS
+   =========================================== */
+@media screen and (max-width: 768px) {
+    /* Splash Screen Mobile - CENTRADO */
+    #splash {
+        align-items: center;
+        justify-content: center;
     }
     
     .splash-content {
-        padding: 0 1rem;
+        padding: 0 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transform: translateY(-5vh); /* Subir un poco el contenido */
+    }
+    
+    .splash-levels,
+    .splash-avicii {
+        font-size: clamp(3.5rem, 18vw, 7rem);
+        letter-spacing: -0.02em;
+        text-shadow: 0 0 40px rgba(150, 0, 255, 0.6),
+                     0 0 80px rgba(100, 0, 200, 0.4);
+        line-height: 0.9;
+    }
+    
+    .splash-from {
+        position: relative;
+        writing-mode: horizontal-tb;
+        transform: none;
+        left: 0;
+        top: 0;
+        font-size: 0.8rem;
+        letter-spacing: 0.4em;
+        margin: 0.8rem 0;
+        opacity: 0.8;
     }
     
     /* Overlay Mobile */
@@ -657,15 +690,20 @@ body {
     }
 }
 
+/* iPhone SE, iPhone 8 y menores (375px) */
 @media screen and (max-width: 480px) {
+    .splash-content {
+        transform: translateY(-3vh);
+    }
+    
     .splash-levels,
     .splash-avicii {
-        font-size: clamp(2.5rem, 14vw, 4rem);
+        font-size: clamp(3rem, 20vw, 5rem);
     }
     
     .splash-from {
-        font-size: 0.6rem;
-        left: -0.5rem;
+        font-size: 0.7rem;
+        margin: 0.6rem 0;
     }
     
     .glitch {
@@ -679,25 +717,72 @@ body {
     
     .control-group {
         gap: 0.8rem;
-        padding: 8px 14px;
+        padding: 10px 16px;
     }
     
     .play-btn {
-        width: 38px;
-        height: 38px;
+        width: 44px;
+        height: 44px;
+    }
+    
+    .play-btn svg {
+        width: 18px;
+        height: 18px;
     }
     
     .volume-slider-wrapper {
-        width: 50px;
+        width: 60px;
     }
     
     .mute-btn {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
     }
     
     .mute-btn svg {
         width: 14px;
         height: 14px;
+    }
+}
+
+/* iPhone Pro Max, Plus (430px+) */
+@media screen and (min-width: 390px) and (max-width: 480px) {
+    .splash-levels,
+    .splash-avicii {
+        font-size: clamp(3.5rem, 22vw, 6rem);
+    }
+    
+    .splash-from {
+        font-size: 0.75rem;
+    }
+    
+    .play-btn {
+        width: 46px;
+        height: 46px;
+    }
+}
+
+/* Landscape en móvil */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .splash-content {
+        transform: translateY(0);
+    }
+    
+    .splash-levels,
+    .splash-avicii {
+        font-size: clamp(2rem, 12vh, 4rem);
+    }
+    
+    .splash-from {
+        margin: 0.3rem 0;
+        font-size: 0.6rem;
+    }
+    
+    .controls-container {
+        padding-bottom: 0.5rem;
+    }
+    
+    .control-group {
+        padding: 8px 14px;
     }
 }

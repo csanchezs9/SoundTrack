@@ -6,16 +6,23 @@
 // ===========================================
 // CONFIGURATION
 // ===========================================
-// Detectar si es móvil
+// Detectar dispositivo
 const isMobile = window.innerWidth <= 768;
 const isSmallMobile = window.innerWidth <= 480;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isLowPerfDevice = isMobile || isIOS;
 
 const CONFIG = {
-    fftSize: 2048,
+    // Audio - reducir FFT en móvil para mejor rendimiento
+    fftSize: isLowPerfDevice ? 1024 : 2048,
     smoothing: 0.85,
     
-    // Sphere - más pequeña en móvil
-    sphereRadius: isSmallMobile ? 1.6 : (isMobile ? 2.0 : 2.8),
+    // Sphere - tamaño adaptativo
+    sphereRadius: isSmallMobile ? 1.8 : (isMobile ? 2.2 : 2.8),
+    
+    // Geometría - menos subdivisiones en móvil
+    sphereDetail: isLowPerfDevice ? 40 : 80,
     
     // Colors - Paleta completa
     colorDeepBlue: new THREE.Color(0x1a0066),   // Azul profundo
@@ -91,21 +98,35 @@ function initCamera() {
 }
 
 function initRenderer() {
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer = new THREE.WebGLRenderer({ 
+        antialias: !isLowPerfDevice, // Desactivar antialiasing en móvil
+        powerPreference: 'high-performance'
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Limitar pixel ratio en iOS para mejor rendimiento
+    const maxPixelRatio = isIOS ? 1.5 : (isMobile ? 1.5 : 2);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
     container.appendChild(renderer.domElement);
 }
 
 function initPostProcessing() {
     const renderScene = new THREE.RenderPass(scene, camera);
     
+    // Bloom más suave en móvil para mejor rendimiento
+    const bloomStrength = isLowPerfDevice ? 1.4 : CONFIG.bloomStrength;
+    const bloomRadius = isLowPerfDevice ? 0.4 : CONFIG.bloomRadius;
+    
     const bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        CONFIG.bloomStrength,
-        CONFIG.bloomRadius,
+        bloomStrength,
+        bloomRadius,
         CONFIG.bloomThreshold
     );
+    
+    // Reducir resolución del bloom en móvil
+    if (isLowPerfDevice) {
+        bloomPass.resolution.set(window.innerWidth / 2, window.innerHeight / 2);
+    }
     
     composer = new THREE.EffectComposer(renderer);
     composer.addPass(renderScene);
@@ -116,7 +137,7 @@ function initPostProcessing() {
 // PLASMA SPHERE - La esfera definitiva
 // ===========================================
 function createPlasmaSphere() {
-    const geometry = new THREE.IcosahedronGeometry(CONFIG.sphereRadius, 80);
+    const geometry = new THREE.IcosahedronGeometry(CONFIG.sphereRadius, CONFIG.sphereDetail);
     
     const material = new THREE.ShaderMaterial({
         uniforms: {
@@ -306,7 +327,8 @@ function createPlasmaSphere() {
 // OUTER GLOW - Halo exterior suave
 // ===========================================
 function createOuterGlow() {
-    const geometry = new THREE.IcosahedronGeometry(CONFIG.sphereRadius * 1.15, 32);
+    const glowDetail = isLowPerfDevice ? 16 : 32;
+    const geometry = new THREE.IcosahedronGeometry(CONFIG.sphereRadius * 1.15, glowDetail);
     
     const material = new THREE.ShaderMaterial({
         uniforms: {
@@ -366,7 +388,7 @@ function createOuterGlow() {
 let ambientParticles;
 
 function createAmbientParticles() {
-    const count = isMobile ? 100 : 300;
+    const count = isIOS ? 50 : (isMobile ? 80 : 300);
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
@@ -482,8 +504,18 @@ function getAverage(array) {
 // ===========================================
 // ANIMATION LOOP
 // ===========================================
-function animate() {
+let lastFrameTime = 0;
+const targetFPS = isIOS ? 30 : 60; // Limitar FPS en iOS
+const frameInterval = 1000 / targetFPS;
+
+function animate(currentTime) {
     requestAnimationFrame(animate);
+    
+    // Throttle para iOS
+    if (isIOS && currentTime - lastFrameTime < frameInterval) {
+        return;
+    }
+    lastFrameTime = currentTime;
     
     if (!isPlaying) {
         composer.render();
