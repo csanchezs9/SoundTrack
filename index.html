@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLASMA ORB - Energy Visualizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Contenedor del visualizador 3D -->
+    <div id="container"></div>
+    
+    <!-- Overlay de inicio -->
+    <div id="overlay">
+        <div class="start-content">
+            <div class="logo-container">
+                <h1 class="glitch" data-text="PLASMA ORB">PLASMA ORB</h1>
+                <div class="subtitle">ORGANIC ENERGY VISUALIZER</div>
+            </div>
+            
+            <div class="track-info">
+                <span class="artist">AVICII</span>
+                <span class="divider">//</span>
+                <span class="song">LEVELS</span>
+            </div>
+
+            <button id="startBtn" class="cyber-button">
+                <span class="btn-text">ACTIVATE ENERGY</span>
+                <span class="btn-glitch"></span>
+            </button>
+            
+            <p class="hint">[ HEADPHONES RECOMMENDED ]</p>
+        </div>
+    </div>
+    
+    <!-- Splash Text LEVELS AVICII -->
+    <div id="splash" class="hidden">
+        <div class="splash-content">
+            <div class="splash-levels">LEVELS</div>
+            <div class="splash-from">FROM</div>
+            <div class="splash-avicii">AVICII</div>
+        </div>
+    </div>
+
+    <!-- UI HUD -->
+    <div id="hud" class="hidden">
+        <div class="top-bar">
+            <div class="status-pill">
+                <span class="pulse-dot"></span>
+                <span class="status-text">LIVE</span>
+            </div>
+            <div class="fps-pill">
+                <span id="fps">60</span>
+                <span class="fps-label">FPS</span>
+            </div>
+        </div>
+
+        <div class="controls-container">
+            <div class="control-group">
+                <!-- Play/Pause Button -->
+                <button id="playPause" class="play-btn">
+                    <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16" rx="1"/>
+                        <rect x="14" y="4" width="4" height="16" rx="1"/>
+                    </svg>
+                    <svg class="icon-play hidden" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36a1 1 0 00-1.5.86z"/>
+                    </svg>
+                    <div class="btn-glow"></div>
+                </button>
+                
+                <!-- Volume Control -->
+                <div class="volume-wrapper">
+                    <button id="muteBtn" class="mute-btn">
+                        <svg class="icon-volume" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                            <path class="volume-waves" d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14"/>
+                        </svg>
+                        <svg class="icon-muted hidden" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                            <line x1="23" y1="9" x2="17" y2="15"/>
+                            <line x1="17" y1="9" x2="23" y2="15"/>
+                        </svg>
+                    </button>
+                    <div class="volume-slider-wrapper">
+                        <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7">
+                        <div class="volume-track">
+                            <div class="volume-fill"></div>
+                            <div class="volume-thumb"></div>
+                        </div>
+                    </div>
+                    <span class="volume-value">70</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js y Post-processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
